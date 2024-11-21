@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Runtime.InteropServices;
 
 #nullable enable
+#pragma warning disable CA1708
 
 namespace Godot
 {
@@ -47,6 +48,17 @@ namespace Godot
         /// Quaternion components should usually not be manipulated directly.
         /// </summary>
         public real_t W;
+
+#pragma warning disable CS1591 // 缺少对公共可见类型或成员的 XML 注释
+#pragma warning disable IDE0251 // 将成员设为“readonly”
+#pragma warning disable IDE1006 // 命名样式
+        public real_t x { get { return X; } set { X = value; } }
+        public real_t y { get { return Y; } set { Y = value; } }
+        public real_t z { get { return Z; } set { Z = value; } }
+        public real_t w { get { return W; } set { W = value; } }
+#pragma warning restore IDE1006 // 命名样式
+#pragma warning restore IDE0251 // 将成员设为“readonly”
+#pragma warning restore CS1591 // 缺少对公共可见类型或成员的 XML 注释
 
         /// <summary>
         /// Access quaternion components using their index.
@@ -495,6 +507,12 @@ namespace Godot
         /// </summary>
         /// <value>Equivalent to <c>new Quaternion(0, 0, 0, 1)</c>.</value>
         public static Quaternion Identity { get { return _identity; } }
+
+#pragma warning disable IDE1006 // 命名样式
+#pragma warning disable CS1591 // 缺少对公共可见类型或成员的 XML 注释
+        public static Quaternion identity { get { return _identity; } }
+#pragma warning restore CS1591 // 缺少对公共可见类型或成员的 XML 注释
+#pragma warning restore IDE1006 // 命名样式
 
         /// <summary>
         /// Constructs a <see cref="Quaternion"/> defined by the given values.

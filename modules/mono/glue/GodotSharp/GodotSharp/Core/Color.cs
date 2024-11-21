@@ -5,6 +5,7 @@ using System.Runtime.InteropServices;
 using Godot.NativeInterop;
 
 #nullable enable
+#pragma warning disable CA1708
 
 namespace Godot
 {
@@ -43,6 +44,17 @@ namespace Godot
 		/// A value of 1 means that the color is fully opaque.
         /// </summary>
         public float A;
+
+#pragma warning disable CS1591 // 缺少对公共可见类型或成员的 XML 注释
+#pragma warning disable IDE0251 // 将成员设为“readonly”
+#pragma warning disable IDE1006 // 命名样式
+        public real_t r { get { return R; } set { R = value; } }
+        public real_t g { get { return G; } set { G = value; } }
+        public real_t b { get { return B; } set { B = value; } }
+        public real_t a { get { return A; } set { A = value; } }
+#pragma warning restore IDE1006 // 命名样式
+#pragma warning restore IDE0251 // 将成员设为“readonly”
+#pragma warning restore CS1591 // 缺少对公共可见类型或成员的 XML 注释
 
         /// <summary>
         /// Wrapper for <see cref="R"/> that uses the range 0 to 255 instead of 0 to 1.

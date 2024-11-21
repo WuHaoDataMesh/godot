@@ -1,9 +1,12 @@
 using System;
+using System.Collections.Generic;
+using System.Reflection;
 
 namespace Godot
 {
     public partial class Node
     {
+
         /// <summary>
         /// Fetches a node. The <see cref="NodePath"/> can be either a relative path (from
         /// the current node) or an absolute path (in the scene tree) to a node. If the path
@@ -194,6 +197,120 @@ namespace Godot
         public T GetParentOrNull<T>() where T : class
         {
             return GetParent() as T;
+        }
+
+
+        private List<Resource> monoList = new List<Resource>();
+        private bool hasCollectMonoProperty = false;
+
+        private void CollectMonoProperty()
+        {
+            if (!hasCollectMonoProperty)
+            {
+                // 检查MonoBehaviour类型的属性，收集到MonoList
+                var properties = this.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public);
+                foreach (var property in properties)
+                {
+                    //GD.Print(property.Name);
+                    if (property.PropertyType.IsSubclassOf(typeof(Resource)))
+                    {
+                        var mono = property.GetValue(this) as Resource;
+                        if (mono != null && mono.isBehaviour)
+                        {
+                            GD.Print("find mono property!");
+                            mono.AttachToNode(this);
+                            monoList.Add(mono);
+                        }
+                    }
+                }
+                hasCollectMonoProperty = true;
+            }
+        }
+
+        private void checkBeforeEnterTree()
+        {
+            CollectMonoProperty();
+            foreach (var mono in monoList)
+            {
+                mono.CallAwake();
+            }
+        }
+
+        private void checkBeforeExitTree()
+        {
+            CollectMonoProperty();
+            foreach (var mono in monoList)
+            {
+                mono.CallOnDestroy();
+            }
+        }
+
+        private void checkBeforeReady()
+        {
+            CollectMonoProperty();
+
+            foreach (var mono in monoList)
+            {
+                mono.CallStart();
+                mono.enabled = true;
+            }
+        }
+
+        private void checkBeforeProcess(double deltaTime)
+        {
+            if (!isActive)
+                return;
+
+            // 推进mono的Update
+            foreach (var mono in monoList)
+            {
+                mono.CallUpdate(deltaTime);
+            }
+
+        }
+
+        private void checkBeforePhysicsProcess()
+        {
+            if (!isActive)
+                return;
+
+            // 推进mono的FixedUpdate
+            foreach (var mono in monoList)
+            {
+                mono.CallFixedLateUpdate();
+            }
+        }
+
+        public T AddComponent<T>() where T : Resource, new()
+        {
+            var mono = new T();
+            mono.AttachToNode(this);
+            monoList.Add(mono);
+
+            mono.CallAwake();
+            mono.CallStart();
+            mono.enabled = true;
+
+            return mono;
+        }
+
+        public T GetComponent<T>() where T : Resource
+        {
+            foreach (var mono in monoList)
+            {
+                if (mono is T)
+                {
+                    return mono as T;
+                }
+            }
+
+            return null;
+        }
+
+        protected bool isActive = true;
+        public virtual void SetActive(bool active)
+        {
+            isActive = active;
         }
     }
 }

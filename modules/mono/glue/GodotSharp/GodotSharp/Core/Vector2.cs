@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Runtime.InteropServices;
 
 #nullable enable
+#pragma warning disable CA1708
 
 namespace Godot
 {
@@ -39,6 +40,15 @@ namespace Godot
         /// The vector's Y component. Also accessible by using the index position <c>[1]</c>.
         /// </summary>
         public real_t Y;
+
+#pragma warning disable CS1591 // 缺少对公共可见类型或成员的 XML 注释
+#pragma warning disable IDE0251 // 将成员设为“readonly”
+#pragma warning disable IDE1006 // 命名样式
+        public real_t x { get { return X; } set { X = value; } }
+        public real_t y { get { return Y; } set { Y = value; } }
+#pragma warning restore IDE1006 // 命名样式
+#pragma warning restore IDE0251 // 将成员设为“readonly”
+#pragma warning restore CS1591 // 缺少对公共可见类型或成员的 XML 注释
 
         /// <summary>
         /// Access vector components using their index.
